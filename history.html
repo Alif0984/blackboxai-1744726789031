@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Transaksi - Sistem Parkir Otomatis</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center">
+                        <i class="fas fa-parking text-blue-600 text-2xl mr-2"></i>
+                        <span class="text-xl font-semibold text-gray-800">SmartPark</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="index.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium">Home</a>
+                    <a href="dashboard.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium">Dashboard</a>
+                    <a href="transaction.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium">Transaksi</a>
+                    <a href="history.html" class="text-blue-600 px-3 py-2 rounded-md font-medium">Riwayat</a>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button class="mobile-menu-button">
+                        <i class="fas fa-bars text-gray-600 text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div class="mobile-menu hidden md:hidden">
+            <a href="index.html" class="block text-gray-600 hover:text-blue-600 px-4 py-2 font-medium">Home</a>
+            <a href="dashboard.html" class="block text-gray-600 hover:text-blue-600 px-4 py-2 font-medium">Dashboard</a>
+            <a href="transaction.html" class="block text-gray-600 hover:text-blue-600 px-4 py-2 font-medium">Transaksi</a>
+            <a href="history.html" class="block text-blue-600 px-4 py-2 font-medium">Riwayat</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <!-- Page Header -->
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-gray-800">Riwayat Transaksi</h1>
+                <p class="text-gray-600">Lihat dan kelola riwayat transaksi parkir</p>
+            </div>
+
+            <!-- Filters and Search -->
+            <div class="bg-white rounded-xl p-6 shadow-sm mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- Date Range -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Rentang Tanggal</label>
+                        <input type="date" id="startDate" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Sampai</label>
+                        <input type="date" id="endDate" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <!-- Vehicle Type Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kendaraan</label>
+                        <select id="vehicleTypeFilter" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Semua</option>
+                            <option value="motor">Motor</option>
+                            <option value="mobil">Mobil</option>
+                        </select>
+                    </div>
+                    <!-- Search -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Cari Plat Nomor</label>
+                        <input type="text" id="searchPlate" placeholder="Contoh: B 1234 CD"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction Table -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-semibold text-gray-800">Daftar Transaksi</h2>
+                        <button id="exportBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="fas fa-file-excel mr-2"></i>
+                            Export Excel
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    No. Transaksi
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Plat Nomor
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Jenis
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Waktu Masuk
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Waktu Keluar
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Durasi
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Biaya
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Aksi
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="transactionTableBody">
+                            <!-- Transaction rows will be dynamically populated here -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <div class="px-6 py-4 border-t border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm text-gray-500">
+                            Menampilkan 1 - 10 dari 100 transaksi
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                Previous
+                            </button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                1
+                            </button>
+                            <button class="px-3 py-1 bg-blue-600 text-white rounded-md text-sm font-medium">
+                                2
+                            </button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                3
+                            </button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Detail Modal -->
+    <div id="detailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-gray-800">Detail Transaksi</h3>
+                <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-500">No. Transaksi</p>
+                        <p class="font-medium text-gray-800" id="modalTransactionId">TRX-001</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Status</p>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Selesai
+                        </span>
+                    </div>
+                </div>
+                <div class="border-t pt-4">
+                    <h4 class="font-medium text-gray-800 mb-2">Informasi Kendaraan</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Plat Nomor</p>
+                            <p class="font-medium text-gray-800" id="modalPlateNumber">B 1234 CD</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Jenis Kendaraan</p>
+                            <p class="font-medium text-gray-800" id="modalVehicleType">Mobil</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-t pt-4">
+                    <h4 class="font-medium text-gray-800 mb-2">Waktu Parkir</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Waktu Masuk</p>
+                            <p class="font-medium text-gray-800" id="modalEntryTime">01/01/2024 10:00</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Waktu Keluar</p>
+                            <p class="font-medium text-gray-800" id="modalExitTime">01/01/2024 12:00</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Durasi</p>
+                            <p class="font-medium text-gray-800" id="modalDuration">2 jam</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-t pt-4">
+                    <h4 class="font-medium text-gray-800 mb-2">Pembayaran</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Total Biaya</p>
+                            <p class="font-medium text-blue-600" id="modalCost">Rp 20.000</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Metode Pembayaran</p>
+                            <p class="font-medium text-gray-800" id="modalPaymentMethod">QRIS</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeDetailModal()" 
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-2 rounded-lg">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <i class="fas fa-parking text-blue-400 text-2xl mr-2"></i>
+                    <span class="text-xl font-semibold">SmartPark</span>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="hover:text-blue-400">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="#" class="hover:text-blue-400">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="hover:text-blue-400">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-4 text-center text-gray-400 text-sm">
+                &copy; 2024 SmartPark. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
